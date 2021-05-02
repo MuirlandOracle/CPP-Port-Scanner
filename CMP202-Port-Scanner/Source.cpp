@@ -31,7 +31,7 @@ bool scanPort(const sf::IpAddress& address, int port) {
 
 int main(int argc, char** argv) {
 	//Argparsing
-	CLI::App app{ "Portscanner | AG" };
+	CLI::App app{ "IPv4 TCP Portscanner | AG" };
 	sf::IpAddress ip;
 	string portsRaw= "None";
 	set<int> portRange;

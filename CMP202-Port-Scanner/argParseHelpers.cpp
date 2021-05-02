@@ -48,10 +48,7 @@ void parsePorts(string& ports, std::set <int>* portList) {
 				getline(hyphen, portsRaw[i], '-');
 				ports[i] = portCheck(portsRaw[i]);
 			}
-			try {
-				assert(ports[0] < ports[1]);
-			}
-			catch (const std::exception& e) {
+			if (ports[0] > ports[1]){
 				cout << "Invalid port range: " << temp << "\n";
 				exit(1);
 			}
@@ -68,28 +65,28 @@ void parsePorts(string& ports, std::set <int>* portList) {
 
 
 string ipCheck(string ip) {
-	string err = "Invalid IPv4 Address";
+	string err = "Invalid IPv4 Address (" + ip + ")";
 	int count = 0;
 	int octet;
 	string octetRaw;
 	stringstream ss(ip);
 	while (getline(ss, octetRaw, '.')) {
-		cout << octetRaw << "\n";
 		++count;
 		if (count > 4) {
 			break;
 		}
 		try {
 			octet = stoi(octetRaw);
-			assert(octet >= 0 && octet <= 255);
+			if (octet < 0 || octet > 255) {
+				throw (std::exception());
+			}
 		}
 		catch (std::exception& e) {
 			return err;
 		}
 	}
-	if (count != 3) {
-		cout << "caught";
-		return err;
+	if (count != 4) {
+		return err ;
 	}
 	return "";
 }
