@@ -7,25 +7,43 @@
 #include "argParseHelpers.h"
 #include <set>
 
+
 using std::string;
 using std::cout;
 using std::set;
-using std::vector;
 using std::stringstream;
 using std::getline;
 using std::stoi;
+using std::to_string;
 
 
-//Connection Timeout
+
+//Globals
+set<int> openPorts;
 sf::Time timeout = sf::milliseconds(100);
 
-
-
-//bool scanPort(const std::string& address, int port) {
 bool scanPort(const sf::IpAddress& address, int port) {
-	cout << address << "\n";
 	return (sf::TcpSocket().connect(address, port, timeout) == sf::Socket::Done);
 }
+
+
+string fingerprintPort(const sf::IpAddress& address, int port) {
+	const int resLength = 300;
+	char data[resLength];
+	string header;
+	header = "===== " + address.toString() + ":" + to_string(port) + " =====\n";
+	string returnVal = "";
+	std::size_t received;
+	sf::TcpSocket sock;
+	sock.connect(address, port);
+	sock.send("Fingerprint", 12);
+	if (sock.receive(data, resLength, received) != sf::Socket::Done) {
+		return header + "Couldn't retrieve header\n";
+	}
+	for (int i = 0; i < received; i++) {returnVal += (data[i]);}
+	return header + returnVal + "\n";
+}
+
 
 
 
@@ -35,14 +53,18 @@ int main(int argc, char** argv) {
 	sf::IpAddress ip;
 	string portsRaw= "None";
 	set<int> portRange;
+	bool serviceEnum = 0;
 	app.add_option<sf::IpAddress, string>("IP", ip, "IP to scan")->required()->type_name("IPv4")->check(ipCheck);
-	app.add_option("-p,--ports", portsRaw, "Port range to scan")->required();
+	app.add_option("-p,--ports", portsRaw, "Port range to scan (comma separated, hyphen ranges)")->required()->type_name("Port List");
+	app.add_flag("-f,--fingerprint", serviceEnum, "Attempt port fingerprinting");
 	CLI11_PARSE(app, argc, argv);
+
 	parsePorts(portsRaw, &portRange);
 
 	for (int i : portRange) {
 		if (scanPort(ip, i)) {
-			cout << "Port " << i << " is open\n";			
+			cout << "Port " << i << " is open\n";
+			openPorts.insert(i);
 		}
 		else {
 			cout << "Port " << i << " is closed\n";
@@ -50,4 +72,7 @@ int main(int argc, char** argv) {
 		
 	}
 	
+	if (serviceEnum) {
+		cout << "\n\nFingerprinting:\n" << fingerprintPort(ip, 443) << "\n";
+	}
 }

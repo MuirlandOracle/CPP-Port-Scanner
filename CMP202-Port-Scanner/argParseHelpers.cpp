@@ -1,12 +1,12 @@
 #pragma once
 #include "argParseHelpers.h"
 #include <string>
+#include <SFML/Network.hpp>
 #include <sstream>
 #include <assert.h>
 #include <vector>
 #include <iostream>
 #include <stdlib.h>
-
 #include <set>
 
 using std::string;
@@ -21,7 +21,9 @@ int portCheck(string portRaw) {
 	int port;
 	try {
 		port = stoi(portRaw);
-		assert(port > 0 && port < 65535);
+		if (port < 0 || port > 65535) {
+			throw std::exception();
+		}
 	}
 	catch (const std::exception& e) {
 		cout << "Invalid port: " << portRaw << "\n";
@@ -37,7 +39,6 @@ void parsePorts(string& ports, std::set <int>* portList) {
 	stringstream ss(ports);
 	while (getline(ss, temp, ',')) {
 		if (temp.find("-") == string::npos) {
-			//convertedPort = portCheck(temp);
 			portList->insert(portCheck(temp));
 		}
 		else {
@@ -66,6 +67,7 @@ void parsePorts(string& ports, std::set <int>* portList) {
 
 string ipCheck(string ip) {
 	string err = "Invalid IPv4 Address (" + ip + ")";
+	/*
 	int count = 0;
 	int octet;
 	string octetRaw;
@@ -87,6 +89,11 @@ string ipCheck(string ip) {
 	}
 	if (count != 4) {
 		return err ;
+	}
+	return "";
+	*/
+	if (sf::IpAddress(ip).toString() == "0.0.0.0") {
+		return err;
 	}
 	return "";
 }
