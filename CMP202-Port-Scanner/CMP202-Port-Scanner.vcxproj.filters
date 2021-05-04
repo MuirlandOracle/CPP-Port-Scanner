@@ -24,6 +24,9 @@
     <ClCompile Include="farm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="portScan.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CLI11.hpp">

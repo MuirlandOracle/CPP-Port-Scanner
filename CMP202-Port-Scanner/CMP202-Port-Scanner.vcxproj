@@ -151,6 +151,7 @@
   <ItemGroup>
     <ClCompile Include="argParseHelpers.cpp" />
     <ClCompile Include="farm.cpp" />
+    <ClCompile Include="portScan.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
