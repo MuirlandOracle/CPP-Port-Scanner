@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include "farm.h"
 #include "argParseHelpers.h"
 #include <set>
 

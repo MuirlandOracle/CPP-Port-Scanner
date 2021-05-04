@@ -21,12 +21,24 @@
     <ClCompile Include="argParseHelpers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="farm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CLI11.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="argParseHelpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="farm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="task.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="portScan.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
