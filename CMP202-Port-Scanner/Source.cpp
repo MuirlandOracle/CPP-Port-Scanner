@@ -9,6 +9,7 @@
 #include "portScan.h"
 #include <set>
 #include <chrono>
+#include <atomic>
 
 
 using std::string;
@@ -20,13 +21,12 @@ using std::stoi;
 using std::to_string;
 using std::chrono::duration_cast;
 using std::chrono::milliseconds;
+using std::atomic;
 
 
 typedef std::chrono::steady_clock timer;
 
 
-//Globals
-set<int> openPorts;
 /*sf::Time timeout = sf::milliseconds(100);
 
 bool scanPort(const sf::IpAddress& address, int port) {
@@ -60,6 +60,9 @@ int main(int argc, char** argv) {
 	sf::IpAddress ip;
 	string portsRaw= "None";
 	set<int> portRange;
+	set<int> openPortsList;
+	atomic<int> openPortsNum;
+	atomic<int> closedPortsNum;
 	bool serviceEnum = 0;
 	app.add_option<sf::IpAddress, string>("IP", ip, "IP to scan")->required()->type_name("IPv4")->check(ipCheck);
 	app.add_option("-p,--ports", portsRaw, "Port range to scan (comma separated, hyphen ranges)")->required()->type_name("Port List");
@@ -73,14 +76,19 @@ int main(int argc, char** argv) {
 
 	timer::time_point start = timer::now();
 	for (int i : portRange) {
-		farm.add_task(new ScanPort(ip, i));
+		farm.add_task(new ScanPort(ip, i, &openPortsList, openPortsNum, closedPortsNum));
 	}
 	farm.run();
 	timer::time_point end = timer::now();
 
-	cout << "\n\n" << portRange.size() << " ports scanned in " << duration_cast<milliseconds>(end - start).count() << "ms\n";
-	
-	/*if (serviceEnum) {
-		cout << "\n\nFingerprinting:\n" << fingerprintPort("google.com", 443) << "\n";
-	}*/
+	for (int i : openPortsList) {
+		cout << "Port " << i << " is open\n";
+	}
+
+
+	cout << "\nOpen Ports: " << openPortsNum << "\n" <<  "Closed Ports: " << closedPortsNum << "\n";
+	cout << "\n" << portRange.size() << " ports scanned in " << duration_cast<milliseconds>(end - start).count() << "ms\n";
+
+
+
 }
