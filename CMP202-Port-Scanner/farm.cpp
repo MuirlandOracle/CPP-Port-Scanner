@@ -43,4 +43,5 @@ void Farm::run()
 	for (auto i : threadPool) {
 		i->join();
 	}
+	threadPool.clear();
 }

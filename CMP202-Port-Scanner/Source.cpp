@@ -27,30 +27,6 @@ using std::atomic;
 typedef std::chrono::steady_clock timer;
 
 
-/*sf::Time timeout = sf::milliseconds(100);
-
-bool scanPort(const sf::IpAddress& address, int port) {
-	return (sf::TcpSocket().connect(address, port, timeout) == sf::Socket::Done);
-}*/
-
-
-string fingerprintPort(const sf::IpAddress& address, int port) {
-	const int resLength = 300;
-	char data[resLength];
-	string header;
-	header = "===== " + address.toString() + ":" + to_string(port) + " =====\n";
-	string returnVal = "";
-	std::size_t received;
-	sf::TcpSocket sock;
-	sock.connect(address, port);
-	sock.send("Fingerprint", 12);
-	if (sock.receive(data, resLength, received) != sf::Socket::Done) {
-		return header + "Couldn't retrieve header\n";
-	}
-	for (int i = 0; i < received; i++) {returnVal += (data[i]);}
-	return header + returnVal + "\n";
-}
-
 
 
 
@@ -89,6 +65,12 @@ int main(int argc, char** argv) {
 	cout << "\nOpen Ports: " << openPortsNum << "\n" <<  "Closed Ports: " << closedPortsNum << "\n";
 	cout << "\n" << portRange.size() << " ports scanned in " << duration_cast<milliseconds>(end - start).count() << "ms\n";
 
-
+	//Farm farm2;
+	if (serviceEnum) {
+		for (int i : openPortsList) {
+			farm.add_task(new FingerprintPort(ip, i));
+		}
+		farm.run();
+	}
 
 }
