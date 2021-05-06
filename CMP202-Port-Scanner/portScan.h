@@ -1,15 +1,18 @@
 #pragma once
 #include "task.h"
 #include <mutex>
+#include <string>
 #include <atomic>
 #include <set>
+#include <map>
 #include <SFML/System.hpp>
 #include <SFML/Network.hpp>
 
-#define TIMEOUT_MILLISECS 100;
 
 using std::mutex;
 using std::set;
+using std::map;
+using std::string;
 using std::atomic;
 
 
@@ -35,13 +38,14 @@ private:
 class FingerprintPort : public Task
 {
 public:
-	FingerprintPort(const sf::IpAddress& address, const int port)
-		: address_(address), port_(port)
+	FingerprintPort(const sf::IpAddress& address, const int port, map<const int, string>* fingerprints)
+		: address_(address), port_(port), fingerprints_(fingerprints)
 	{}
 
 	void run();
 private:
 	const sf::IpAddress address_;
 	const int port_;
-	mutex coutLock;
+	mutex mapLock;
+	map<const int, string>* fingerprints_;
 };

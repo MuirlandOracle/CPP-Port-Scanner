@@ -12,6 +12,7 @@ using std::unique_lock;
 using std::mutex;
 using std::string;
 using std::to_string;
+using std::pair;
 using std::cout;
 using std::chrono::duration_cast;
 using std::chrono::milliseconds;
@@ -36,6 +37,7 @@ void FingerprintPort::run() {
 	const int resLength = 300;
 	char data[resLength];
 	string header = "===== " + address_.toString() + ":" + to_string(port_) + " =====\n";
+	string res = "";
 	std::size_t received;
 	sf::TcpSocket sock;
 	sock.connect(address_, port_);
@@ -43,18 +45,19 @@ void FingerprintPort::run() {
 	sock.setBlocking(false);
 	//Timeout
 	timeout::time_point start = timeout::now();
-	while (duration_cast<milliseconds>(timeout::now() - start).count() < 5000) {
+	do {
 		if (sock.receive(data, resLength, received) == sf::Socket::Done) {
-			unique_lock<mutex> lock(coutLock);
+			unique_lock<mutex> lock(mapLock);
 			//Format the data
-			cout << header;
-			for (int i = 0; i < received; i++) { cout << data[i]; }
-			cout << "\n";
-			return;
+			for (int i = 0; i < received; i++) { res += data[i]; }
+			break;
 		}
+	} while (duration_cast<milliseconds>(timeout::now() - start).count() < 5000);
+	if (res == "") {
+		res = "Couldn't retrieve header\n";
 	}
-	
-	unique_lock<mutex> lock(coutLock);
-	cout << header + "Couldn't retrieve header\n";
+	res = header + res;
+	unique_lock<mutex> lock(mapLock);
+	fingerprints_->insert({ port_, res });
 	
 }
