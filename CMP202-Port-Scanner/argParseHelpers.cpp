@@ -67,31 +67,6 @@ void parsePorts(string& ports, std::set <int>* portList) {
 
 string ipCheck(string ip) {
 	string err = "Invalid IPv4 Address (" + ip + ")";
-	/*
-	int count = 0;
-	int octet;
-	string octetRaw;
-	stringstream ss(ip);
-	while (getline(ss, octetRaw, '.')) {
-		++count;
-		if (count > 4) {
-			break;
-		}
-		try {
-			octet = stoi(octetRaw);
-			if (octet < 0 || octet > 255) {
-				throw (std::exception());
-			}
-		}
-		catch (std::exception& e) {
-			return err;
-		}
-	}
-	if (count != 4) {
-		return err ;
-	}
-	return "";
-	*/
 	if (sf::IpAddress(ip).toString() == "0.0.0.0") {
 		return err;
 	}
