@@ -11,12 +11,12 @@
 #include "task.h"
 #include <queue>
 #include <mutex>
-#include <list>
+#include <vector>
 
 using std::queue;
 using std::mutex;
 using std::thread;
-using std::list;
+using std::vector;
 
 //Class definition for the Farm class -- used to organise tasks and split them between threads
 class Farm {
@@ -31,7 +31,7 @@ private:
 	//Queue to contain the tasks. FIFO structure
 	std::queue<Task*> taskQueue;
 	//Vector containing pointers to the available threads
-	list <thread*> threadPool;
+	vector <thread*> threadPool;
 	
 };
 
