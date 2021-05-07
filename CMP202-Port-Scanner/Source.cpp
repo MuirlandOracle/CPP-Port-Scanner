@@ -4,6 +4,8 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <fstream>
+#include <chrono>
 #include "argParseHelpers.h"
 #include <set>
 
@@ -15,8 +17,11 @@ using std::stringstream;
 using std::getline;
 using std::stoi;
 using std::to_string;
+using std::ofstream;
+using std::chrono::duration_cast;
+using std::chrono::milliseconds;
 
-
+typedef std::chrono::steady_clock timer;
 
 //Globals
 set<int> openPorts;
@@ -61,16 +66,25 @@ int main(int argc, char** argv) {
 
 	parsePorts(portsRaw, &portRange);
 
-	for (int i : portRange) {
-		if (scanPort(ip, i)) {
-			cout << "Port " << i << " is open\n";
-			openPorts.insert(i);
+
+	ofstream results("results.csv");
+	for (int j; j < 10000; j++) {
+		cout << "Iteration: " << j << "\n";
+		timer::time_point start = timer::now();
+		for (int i : portRange) {
+			if (scanPort(ip, i)) {
+				//cout << "Port " << i << " is open\n";
+				openPorts.insert(i);
+			}
+			else {
+				//cout << "Port " << i << " is closed\n";
+			}
+
 		}
-		else {
-			cout << "Port " << i << " is closed\n";
-		}
-		
+		timer::time_point end = timer::now();
+		results << duration_cast<milliseconds>(end - start).count() << ",";
 	}
+	results.close();
 	
 	if (serviceEnum) {
 		cout << "\n\nFingerprinting:\n" << fingerprintPort(ip, 443) << "\n";
