@@ -14,9 +14,11 @@
 #include <map>
 #include <chrono>
 #include <atomic>
+#include <thread>
 #include "argParseHelpers.h"
 #include "farm.h"
 #include "portScan.h"
+#include "channel.h"
 
 using std::string;
 using std::cout;
@@ -109,10 +111,33 @@ int main(int argc, char** argv) {
 		}
 		farm.run();
 
+		/* Normal output method
 		//Output the fingerprints in order
 		cout << "===== Fingerprinting =====\t\n";
 		for (auto i : openPortsList) {
 			cout << fingerprints.at(i) << "\n";
+		}
+		*/
+
+		//This is an entirely dumb solution, but it demonstrates signalling between threads
+		thread* outputThreads[2];
+		channel<string> c;
+		outputThreads[0] = new thread([&] {
+			string data = "";
+			do {
+				data = c.read();
+				cout << data << "\n";
+			} while (data != "");
+		});
+		outputThreads[1] = new thread([&] {
+			for (auto i : openPortsList) {
+				c.write(fingerprints.at(i));
+			}
+			c.write("");
+		});
+		for (thread* i : outputThreads) {
+			i->join();
+			delete i;
 		}
 	}
 

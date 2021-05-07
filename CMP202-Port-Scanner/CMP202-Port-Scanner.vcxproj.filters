@@ -27,6 +27,9 @@
     <ClCompile Include="portScan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="semaphore.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CLI11.hpp">
@@ -42,6 +45,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="portScan.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="channel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="semaphore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -152,13 +152,16 @@
     <ClCompile Include="argParseHelpers.cpp" />
     <ClCompile Include="farm.cpp" />
     <ClCompile Include="portScan.cpp" />
+    <ClCompile Include="semaphore.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="argParseHelpers.h" />
+    <ClInclude Include="channel.h" />
     <ClInclude Include="CLI11.hpp" />
     <ClInclude Include="farm.h" />
     <ClInclude Include="portScan.h" />
+    <ClInclude Include="semaphore.h" />
     <ClInclude Include="task.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
