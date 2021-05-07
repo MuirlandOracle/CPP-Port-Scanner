@@ -10,10 +10,7 @@
 #include "task.h"
 #include <thread>
 #include <mutex>
-#include <vector>
-#include <iostream>
 using std::unique_lock;
-using std::vector;
 using std::thread;
 
 //Adds a task to the Farm task queue
