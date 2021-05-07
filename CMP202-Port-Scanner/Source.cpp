@@ -18,6 +18,7 @@
 #include "argParseHelpers.h"
 #include "farm.h"
 #include "portScan.h"
+#include "channel.h"
 
 using std::string;
 using std::cout;
@@ -66,9 +67,9 @@ int main(int argc, char** argv) {
 
 	timer::time_point start;
 	timer::time_point end;
-	std::ofstream results("results.csv");
-	for (int j = 0; j < 10000; j++) {
-		cout << "Iteration: " << j << "\n";
+	//std::ofstream results("results.csv");
+	//for (int j = 0; j < 10000; j++) {
+		//cout << "Iteration: " << j << "\n";
 		//Scan the parsed ports (one port per task). Pass in a reference to the openPortsList for output, as well as the atomic open/closed port numbers
 		for (int i : portRange) {
 			farm.add_task(new ScanPort(ip, i, &openPortsList, openPortsNum, closedPortsNum));
@@ -79,10 +80,10 @@ int main(int argc, char** argv) {
 		farm.run();
 		//Stop the clock
 		end = timer::now();
-		results << duration_cast<milliseconds>(end - start).count() << ",";
-	}
-	results << "\b ";
-	results.close();
+		//results << duration_cast<milliseconds>(end - start).count() << ",";
+	//}
+	//results << "\b ";
+	//results.close();
 
 
 	//Output the number of open and closed ports, plus the time taken to scan
@@ -121,10 +122,32 @@ int main(int argc, char** argv) {
 		}
 		farm.run();
 
-		//Output the fingerprints in order
+		
 		cout << "===== Fingerprinting =====\t\n";
-		for (auto i : openPortsList) {
+		//Normal way of outputting the fingerprints
+		/*for (auto i : openPortsList) {
 			cout << fingerprints.at(i) << "\n";
+		}*/
+
+		//Most complicated "cout" ever implemented, but it should meet the requirements
+		thread* outputThreads[2];
+		channel<string> c;
+		outputThreads[0] = new thread([&] {
+			string data;
+			do {
+				data = c.read();
+				cout << data << "\n";
+			} while (data != "");
+			});
+		outputThreads[1] = new thread([&] {
+			for (auto i : openPortsList) {
+				c.write(fingerprints.at(i));
+			}
+			c.write("");
+			});
+		for (thread* i : outputThreads) {
+			i->join();
+			delete i;
 		}
 	}
 
