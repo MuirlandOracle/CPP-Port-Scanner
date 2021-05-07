@@ -1,7 +1,7 @@
 # C++ Port Scanner
-## Multi-threaded C++ Port Scanner. Originally designed for Abertay CMP202 (DS&Alg2)
+Multi-threaded C++ Port Scanner. Originally designed for Abertay CMP202 (DS&Alg2)
 
-### Depends on:
+## Depends on:
 * https://github.com/CLIUtils/CLI11
 * https://github.com/SFML/SFML
 
@@ -15,3 +15,8 @@
 		* For Debug mode: Add `sfml-network-s-d.lib;sfml-system-s-d.lib;ws2_32.lib;winmm.lib`
 		* For Release mode: Add `sfml-network-s.lib;sfml-system-s.lib;ws2_32.lib;winmm.lib`
 	* C/C++ -> Preprocessor -> Preprocessor Definitions. Add `SFML_STATIC`
+
+
+## To-Do:
+- [ ] Add file output options
+- [ ] Speed the thing up
