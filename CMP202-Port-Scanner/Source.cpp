@@ -14,11 +14,10 @@
 #include <map>
 #include <chrono>
 #include <atomic>
-#include <thread>
+#include <fstream>
 #include "argParseHelpers.h"
 #include "farm.h"
 #include "portScan.h"
-#include "channel.h"
 
 using std::string;
 using std::cout;
@@ -65,15 +64,26 @@ int main(int argc, char** argv) {
 	cout << "\nScanning " << ip.toString() << "...\n";
 
 
-	//Start the clock for the port-scan
-	timer::time_point start = timer::now();
-
-	//Scan the parsed ports (one port per task). Pass in a reference to the openPortsList for output, as well as the atomic open/closed port numbers
-	for (int i : portRange) {
-		farm.add_task(new ScanPort(ip, i, &openPortsList, openPortsNum, closedPortsNum));
+	timer::time_point start;
+	timer::time_point end;
+	std::ofstream results("results.csv");
+	for (int j = 0; j < 10000; j++) {
+		cout << "Iteration: " << j << "\n";
+		//Scan the parsed ports (one port per task). Pass in a reference to the openPortsList for output, as well as the atomic open/closed port numbers
+		for (int i : portRange) {
+			farm.add_task(new ScanPort(ip, i, &openPortsList, openPortsNum, closedPortsNum));
+		}
+		//Start the clock for the port-scan
+		start = timer::now();
+		//Run the scan
+		farm.run();
+		//Stop the clock
+		end = timer::now();
+		results << duration_cast<milliseconds>(end - start).count() << ",";
 	}
-	farm.run();
-	timer::time_point end = timer::now();
+	results << "\b ";
+	results.close();
+
 
 	//Output the number of open and closed ports, plus the time taken to scan
 	cout << "\n" << portRange.size() << " ports scanned in " << duration_cast<milliseconds>(end - start).count() << "ms\n";
@@ -111,33 +121,10 @@ int main(int argc, char** argv) {
 		}
 		farm.run();
 
-		/* Normal output method
 		//Output the fingerprints in order
 		cout << "===== Fingerprinting =====\t\n";
 		for (auto i : openPortsList) {
 			cout << fingerprints.at(i) << "\n";
-		}
-		*/
-
-		//This is an entirely dumb solution, but it demonstrates signalling between threads
-		thread* outputThreads[2];
-		channel<string> c;
-		outputThreads[0] = new thread([&] {
-			string data = "";
-			do {
-				data = c.read();
-				cout << data << "\n";
-			} while (data != "");
-		});
-		outputThreads[1] = new thread([&] {
-			for (auto i : openPortsList) {
-				c.write(fingerprints.at(i));
-			}
-			c.write("");
-		});
-		for (thread* i : outputThreads) {
-			i->join();
-			delete i;
 		}
 	}
 
